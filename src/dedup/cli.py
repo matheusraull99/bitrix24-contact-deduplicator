@@ -18,6 +18,8 @@ from bitrix24_client.errors import BitrixError
 from .matching import Contato, encontrar_pares
 from .merger import Merger, RelatorioFusao, exportar_para_revisao, ler_aprovados
 
+log = logging.getLogger("dedup")
+
 CAMPOS = [
     "ID", "NAME", "LAST_NAME", "EMAIL", "PHONE",
     "COMPANY_TITLE", "DATE_CREATE", "UF_CRM_DOCUMENTO",
@@ -27,7 +29,7 @@ CAMPOS = [
 def carregar_contatos(bx) -> list[Contato]:
     """Baixa a base inteira já achatada para o formato de pareamento."""
     brutos = list(bx.fetch_all("crm.contact.list", {"select": CAMPOS}))
-    logging.info("%d contatos carregados", len(brutos))
+    log.info("%d contatos carregados", len(brutos))
     return [Contato.do_crm(b) for b in brutos]
 
 

@@ -205,7 +205,9 @@ def escolher_sobrevivente(a: Contato, b: Contato) -> tuple[Contato, Contato]:
     rodar o robô duas vezes na mesma base tem que dar a mesma decisão, senão
     a revisão de ontem não vale hoje.
     """
-    chave = lambda c: (-c.campos_preenchidos, c.criado_em or "9999", c.id)  # noqa: E731
+    def chave(c: Contato) -> tuple[int, str, int]:
+        return (-c.campos_preenchidos, c.criado_em or "9999", c.id)
+
     manter, remover = sorted([a, b], key=chave)
     return manter, remover
 

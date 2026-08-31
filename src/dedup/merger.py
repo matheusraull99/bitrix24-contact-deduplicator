@@ -72,7 +72,8 @@ class Merger:
             self._registrar_na_timeline(manter.id, remover, par)
             self._apagar(remover.id)
             relatorio.fundidos += 1
-        except Exception as exc:  # noqa: BLE001 - uma fusao ruim nao para o lote
+        # captura ampla de proposito: uma fusao ruim nao pode parar o lote
+        except Exception as exc:
             log.exception("falha ao fundir %d em %d", remover.id, manter.id)
             relatorio.falhas.append((remover.id, str(exc)))
 
@@ -124,7 +125,10 @@ class Merger:
                 continue
 
             for registro, _, erro in self.bx.batch_iter(
-                registros, metodo_update, lambda r: {"id": r["ID"], "fields": {campo: manter_id}}
+                registros,
+                metodo_update,
+                # `campo` entra como padrao para prender o valor desta volta do laco
+                lambda r, campo=campo: {"id": r["ID"], "fields": {campo: manter_id}},
             ):
                 if erro:
                     log.error("nao movi %s %s: %s", metodo_lista, registro["ID"], erro)
